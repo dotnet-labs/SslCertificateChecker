@@ -1,19 +1,12 @@
-namespace SslCertificateChecker
+namespace SslCertificateChecker;
+
+public class Worker(ICertificateChecker certificateChecker, ILogger<Worker> logger) : BackgroundService
 {
-    public class Worker : BackgroundService
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private readonly ILogger<Worker> _logger;
-        private readonly ICertificateChecker _certificateChecker;
-
-        public Worker(ILogger<Worker> logger, ICertificateChecker certificateChecker)
-        {
-            _logger = logger;
-            _certificateChecker = certificateChecker;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            await _certificateChecker.Check("https://docs.microsoft.com/");
-        }
+        const string url = "https://docs.microsoft.com/";
+        await certificateChecker.Check(url);
+        var d = await certificateChecker.GetExpirationDate(url);
+        logger.LogInformation("SSL Certificate for [{url}] expires At: {d}", url, d);
     }
 }

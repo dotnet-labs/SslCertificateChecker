@@ -8,5 +8,8 @@ public class Worker(ICertificateChecker certificateChecker, ILogger<Worker> logg
         await certificateChecker.Check(url);
         var d = await certificateChecker.GetExpirationDate(url);
         logger.LogInformation("SSL Certificate for [{url}] expires At: {d}", url, d);
+
+        var ips = IpResolver.GetIPsByHostName(url);
+        logger.LogInformation("{i}", ips.Select(x => x.ToString()));
     }
 }
